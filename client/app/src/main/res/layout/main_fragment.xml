@@ -8,14 +8,14 @@
         android:layout_height="match_parent"
         tools:context=".ui.main.MainFragment">
 
-    <TextView
-            android:id="@+id/message"
+    <Button
+            android:text="Go to sleep"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MainFragment"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"/>
-
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="16dp"
+            tools:layout_editor_absoluteX="138dp" android:id="@+id/btnSleepF"/>
+    <Button
+            android:text="Wake up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" tools:layout_editor_absoluteY="78dp"
+            tools:layout_editor_absoluteX="148dp" android:id="@+id/btnWakeUpF"/>
 </android.support.constraint.ConstraintLayout>
