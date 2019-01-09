@@ -1,0 +1,17 @@
+# Test sever
+GET http://localhost:5000
+# Create a sleep
+POST http://localhost:5000/sleep
+Content-Type: application/json
+{
+	"food": "high",
+	"exercise": "low",
+	"stress": "medium",
+	"mood": "happy"
+}
+# Create a wakeup
+POST http://localhost:5000/wakeup
+Content-Type: application/json
+{
+	"type": "other"
+}
