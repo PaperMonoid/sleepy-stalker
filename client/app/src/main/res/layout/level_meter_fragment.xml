@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto" xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".LevelMeter" android:orientation="vertical" android:padding="0dp">
+
+    <TextView
+            android:text="Label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/txtLevelMeter" android:padding="10dp"/>
+    <SeekBar
+            style="@style/Widget.AppCompat.SeekBar.Discrete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:max="3"
+            android:progress="0"
+            android:id="@+id/sbLevelMeter" android:layout_marginBottom="0dp" android:padding="10dp"/>
+    <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" android:id="@+id/imgLevelMeter"
+            android:contentDescription="TODO" app:srcCompat="@mipmap/sleepy_stalker"/>
+</LinearLayout>

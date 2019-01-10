@@ -3,19 +3,27 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/main"
+        android:id="@+id/layoutMain"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.main.MainFragment">
 
-    <Button
-            android:text="Go to sleep"
+    <LinearLayout
+            android:orientation="vertical"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" tools:layout_editor_absoluteY="16dp"
-            tools:layout_editor_absoluteX="138dp" android:id="@+id/btnSleepF"/>
-    <Button
-            android:text="Wake up"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" tools:layout_editor_absoluteY="78dp"
-            tools:layout_editor_absoluteX="148dp" android:id="@+id/btnWakeUpF"/>
+            android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
+    >
+        <Button
+                android:text="Go to sleep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" tools:layout_editor_absoluteY="16dp"
+                tools:layout_editor_absoluteX="138dp" android:id="@+id/btnSleepF"/>
+        <Button
+                android:text="Wake up"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" tools:layout_editor_absoluteY="78dp"
+                tools:layout_editor_absoluteX="148dp" android:id="@+id/btnWakeUpF"/>
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>

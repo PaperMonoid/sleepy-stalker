@@ -1,10 +1,11 @@
 package com.coffeebeans.tritiummonoid.sleepystalker
 
+import android.net.Uri
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import com.coffeebeans.tritiummonoid.sleepystalker.ui.main.MainFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(){
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

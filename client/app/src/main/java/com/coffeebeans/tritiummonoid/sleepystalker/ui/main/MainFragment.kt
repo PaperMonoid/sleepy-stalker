@@ -1,12 +1,16 @@
 package com.coffeebeans.tritiummonoid.sleepystalker.ui.main
 
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import com.coffeebeans.tritiummonoid.sleepystalker.R
+import com.coffeebeans.tritiummonoid.sleepystalker.SleepActivity
+import com.coffeebeans.tritiummonoid.sleepystalker.WakeUpActivity
 
 class MainFragment : Fragment() {
 
@@ -20,7 +24,16 @@ class MainFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        return inflater.inflate(R.layout.main_fragment, container, false)
+        val view = inflater.inflate(R.layout.main_fragment, container, false)
+        val btnSleepF = view.findViewById(R.id.btnSleepF) as Button
+        btnSleepF.setOnClickListener {
+            startActivity(Intent(view.context, SleepActivity::class.java))
+        }
+        var btnWakeUpF = view.findViewById(R.id.btnWakeUpF) as Button
+        btnWakeUpF.setOnClickListener {
+            startActivity(Intent(view.context, WakeUpActivity::class.java))
+        }
+        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
