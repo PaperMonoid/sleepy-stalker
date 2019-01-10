@@ -9,7 +9,6 @@ class WakeUpActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wake_up)
-        setContentView(R.layout.activity_sleep)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.title = "Wake up"
     }
