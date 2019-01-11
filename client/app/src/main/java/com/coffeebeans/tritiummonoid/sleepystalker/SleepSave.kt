@@ -1,13 +1,15 @@
 package com.coffeebeans.tritiummonoid.sleepystalker
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.util.Consumer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.TextView
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -18,13 +20,13 @@ private const val ARG_PARAM2 = "param2"
 /**
  * A simple [Fragment] subclass.
  * Activities that contain this fragment must implement the
- * [SleepExercise.OnFragmentInteractionListener] interface
+ * [SleepSave.OnFragmentInteractionListener] interface
  * to handle interaction events.
- * Use the [SleepExercise.newInstance] factory method to
+ * Use the [SleepSave.newInstance] factory method to
  * create an instance of this fragment.
  *
  */
-class SleepExercise : Fragment() {
+class SleepSave : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -43,13 +45,31 @@ class SleepExercise : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        val view = inflater.inflate(R.layout.fragment_sleep_exercise, container, false)
-        val btnHigh = view.findViewById(R.id.btnSleepExerciseHigh) as Button
-        val btnMedium = view.findViewById(R.id.btnSleepExerciseMedium) as Button
-        val btnLow = view.findViewById(R.id.btnSleepExerciseLow) as Button
-        btnHigh.setOnClickListener { listener?.onExerciseChange(Level.high) }
-        btnMedium.setOnClickListener { listener?.onExerciseChange(Level.medium) }
-        btnLow.setOnClickListener { listener?.onExerciseChange(Level.low) }
+        val view = inflater.inflate(R.layout.fragment_sleep_save, container, false)
+        listener?.setSleepModelConsumer(Consumer {
+            val model = it
+            val txtTime = view.findViewById(R.id.txtSleepValueTime) as TextView
+            val txtFood = view.findViewById(R.id.txtSleepValueFood) as TextView
+            val txtStress = view.findViewById(R.id.txtSleepValueStress) as TextView
+            val txtExercise = view.findViewById(R.id.txtSleepValueExercise) as TextView
+            val txtMood = view.findViewById(R.id.txtSleepValueMood) as TextView
+            val btnSave = view.findViewById(R.id.btnSleepSave) as Button
+            txtTime.text = model.datetime.toString()
+            txtFood.text = model.food.name
+            txtStress.text = model.stress.name
+            txtExercise.text = model.exercise.name
+            txtMood.text = model.mood.name
+            btnSave.setOnClickListener {
+                try {
+                    SleepStore(it.context).save(model)
+                    Log.v("SLEEP_SAVE", "SAVED")
+                    listener?.onSaveSuccess()
+                } catch (e: Exception) {
+                    Log.e("SLEEP_SAVE", e.message)
+                    listener?.onSaveError()
+                }
+            }
+        })
         return view
     }
 
@@ -64,6 +84,7 @@ class SleepExercise : Fragment() {
 
     override fun onDetach() {
         super.onDetach()
+        listener?.setSleepModelConsumer(null)
         listener = null
     }
 
@@ -80,7 +101,9 @@ class SleepExercise : Fragment() {
      */
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onExerciseChange(exercise: Level)
+        fun setSleepModelConsumer(consumer: Consumer<SleepModel>?)
+        fun onSaveSuccess()
+        fun onSaveError()
     }
 
     companion object {
@@ -90,12 +113,12 @@ class SleepExercise : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment SleepExercise.
+         * @return A new instance of fragment SleepSave.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            SleepExercise().apply {
+            SleepSave().apply {
                 arguments = Bundle().apply {
                     putString(ARG_PARAM1, param1)
                     putString(ARG_PARAM2, param2)

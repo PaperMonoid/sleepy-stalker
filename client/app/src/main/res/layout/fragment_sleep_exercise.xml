@@ -12,15 +12,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <TextView
-                android:text="Exercise"
+                android:text="What's my exercise level?"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/txtSleepExercise" android:padding="10dp"/>
-        <SeekBar
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
+                android:layout_height="wrap_content" android:id="@+id/txtSleepExercise" android:padding="10dp"
+                android:textSize="30sp"/>
+        <Space
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="2"
-                android:progress="0"
-                android:id="@+id/sbSleepExercise" android:padding="10dp"/>
+                android:layout_height="wrap_content" android:layout_weight="1"/>
+        <Button
+                android:text="High"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/btnSleepExerciseHigh"/>
+        <Button
+                android:text="Medium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/btnSleepExerciseMedium"/>
+        <Button
+                android:text="Low"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/btnSleepExerciseLow"/>
+        <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_weight="1"/>
     </LinearLayout>
 </FrameLayout>

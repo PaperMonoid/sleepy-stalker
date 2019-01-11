@@ -12,22 +12,27 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
         <TextView
-                android:text="Mood"
+                android:text="What's my mood?"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/txtSleepMood" android:padding="10dp"/>
-        <SeekBar
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:max="2"
-                android:progress="0"
-                android:id="@+id/sbSleepMood" android:padding="10dp"/>
+                android:layout_height="wrap_content" android:id="@+id/txtSleepMood" android:padding="10dp"
+                android:textSize="30sp"/>
         <Space
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:layout_weight="1"/>
         <Button
-                android:text="Save"
+                android:text="Happy"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" android:id="@+id/btnSleep"/>
+                android:layout_height="wrap_content" android:id="@+id/btnSleepMoodHappy"/>
+        <Button
+                android:text="Sad"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/btnSleepMoodSad"/>
+        <Button
+                android:text="Angry"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:id="@+id/btnSleepMoodAngry"/>
+        <Space
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" android:layout_weight="1"/>
     </LinearLayout>
 </FrameLayout>

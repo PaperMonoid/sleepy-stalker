@@ -1,12 +1,12 @@
 package com.coffeebeans.tritiummonoid.sleepystalker
 
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,12 +42,14 @@ class SleepMood : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sleep_mood, container, false)
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+        val view = inflater.inflate(R.layout.fragment_sleep_mood, container, false)
+        val btnHappy = view.findViewById(R.id.btnSleepMoodHappy) as Button
+        val btnSad = view.findViewById(R.id.btnSleepMoodSad) as Button
+        val btnAngry = view.findViewById(R.id.btnSleepMoodAngry) as Button
+        btnHappy.setOnClickListener { listener?.onMoodChange(Mood.happy) }
+        btnSad.setOnClickListener { listener?.onMoodChange(Mood.sad) }
+        btnAngry.setOnClickListener { listener?.onMoodChange(Mood.angry) }
+        return view
     }
 
     override fun onAttach(context: Context) {
@@ -77,7 +79,7 @@ class SleepMood : Fragment() {
      */
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+        fun onMoodChange(mood: Mood)
     }
 
     companion object {

@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.SeekBar
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -42,12 +44,14 @@ class SleepStress : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sleep_stress, container, false)
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    fun onButtonPressed(uri: Uri) {
-        listener?.onFragmentInteraction(uri)
+        val view = inflater.inflate(R.layout.fragment_sleep_stress, container, false)
+        val btnHigh = view.findViewById(R.id.btnSleepStressHigh) as Button
+        val btnMedium = view.findViewById(R.id.btnSleepStressMedium) as Button
+        val btnLow = view.findViewById(R.id.btnSleepStressLow) as Button
+        btnHigh.setOnClickListener { listener?.onStressChange(Level.high) }
+        btnMedium.setOnClickListener { listener?.onStressChange(Level.medium) }
+        btnLow.setOnClickListener { listener?.onStressChange(Level.low) }
+        return view
     }
 
     override fun onAttach(context: Context) {
@@ -77,7 +81,7 @@ class SleepStress : Fragment() {
      */
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onFragmentInteraction(uri: Uri)
+        fun onStressChange(stress: Level)
     }
 
     companion object {

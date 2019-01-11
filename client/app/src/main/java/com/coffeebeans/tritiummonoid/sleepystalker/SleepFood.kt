@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.SeekBar
 
 
@@ -45,8 +46,12 @@ class SleepFood : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_sleep_food, container, false)
-        val sbSleepFood = view.findViewById(R.id.sbSleepFood) as SeekBar
-        sbSleepFood.setOnSeekBarChangeListener(FoodChangeListener(listener))
+        val btnHigh = view.findViewById(R.id.btnSleepFoodHigh) as Button
+        val btnMedium = view.findViewById(R.id.btnSleepFoodMedium) as Button
+        val btnLow = view.findViewById(R.id.btnSleepFoodLow) as Button
+        btnHigh.setOnClickListener { listener?.onFoodChange(Level.high) }
+        btnMedium.setOnClickListener { listener?.onFoodChange(Level.medium) }
+        btnLow.setOnClickListener { listener?.onFoodChange(Level.low) }
         return view
     }
 
@@ -77,7 +82,7 @@ class SleepFood : Fragment() {
      */
     interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        fun onFoodChange(food: Int)
+        fun onFoodChange(food: Level)
     }
 
     companion object {
@@ -99,16 +104,4 @@ class SleepFood : Fragment() {
                 }
             }
     }
-}
-
-class FoodChangeListener(var listener: SleepFood.OnFragmentInteractionListener?): SeekBar.OnSeekBarChangeListener {
-
-    override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-        listener?.onFoodChange(progress)
-    }
-
-    override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-
-    override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-
 }

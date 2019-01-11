@@ -13,12 +13,13 @@ class SleepPagerAdapter(val context: Context, val fragmentManager: FragmentManag
             1 -> return Fragment.instantiate(context, SleepStress::class.java!!.name)
             2 -> return Fragment.instantiate(context, SleepExercise::class.java!!.name)
             3 -> return Fragment.instantiate(context, SleepMood::class.java!!.name)
+            4 -> return Fragment.instantiate(context, SleepSave::class.java!!.name)
             else -> return Fragment.instantiate(context, SleepFood::class.java!!.name)
         }
     }
 
     override fun getCount(): Int {
-        return 4
+        return 5
     }
 
 }
