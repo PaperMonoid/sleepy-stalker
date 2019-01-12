@@ -30,7 +30,7 @@ CREATE TABLE `Sleep` (
   `Stress` enum('low','medium','high') NOT NULL DEFAULT 'low',
   `Mood` enum('happy','sad','angry') NOT NULL DEFAULT 'happy',
   PRIMARY KEY (`SleepId`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -43,6 +43,34 @@ LOCK TABLES `Sleep` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `SleepInterval`
+--
+
+DROP TABLE IF EXISTS `SleepInterval`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `SleepInterval` (
+  `SleepIntervalId` int(4) NOT NULL AUTO_INCREMENT,
+  `SleepId` int(4) NOT NULL,
+  `WakeUpId` int(4) NOT NULL,
+  PRIMARY KEY (`SleepIntervalId`),
+  UNIQUE KEY `SleepId` (`SleepId`),
+  UNIQUE KEY `WakeUpId` (`WakeUpId`),
+  CONSTRAINT `SleepInterval_ibfk_1` FOREIGN KEY (`SleepId`) REFERENCES `Sleep` (`SleepId`),
+  CONSTRAINT `SleepInterval_ibfk_2` FOREIGN KEY (`WakeUpId`) REFERENCES `WakeUp` (`WakeUpId`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `SleepInterval`
+--
+
+LOCK TABLES `SleepInterval` WRITE;
+/*!40000 ALTER TABLE `SleepInterval` DISABLE KEYS */;
+/*!40000 ALTER TABLE `SleepInterval` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `WakeUp`
 --
 
@@ -51,12 +79,9 @@ DROP TABLE IF EXISTS `WakeUp`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `WakeUp` (
   `WakeUpId` int(4) NOT NULL AUTO_INCREMENT,
-  `SleepId` int(4) NOT NULL,
   `WakeUpTime` timestamp NOT NULL DEFAULT current_timestamp(),
-  `WakeUpType` enum('natural','alarm','other') NOT NULL DEFAULT 'natural',
-  PRIMARY KEY (`WakeUpId`),
-  UNIQUE KEY `SleepId` (`SleepId`),
-  CONSTRAINT `WakeUp_ibfk_1` FOREIGN KEY (`SleepId`) REFERENCES `Sleep` (`SleepId`) ON DELETE CASCADE
+  `WakeUpReason` enum('natural','alarm','other') NOT NULL DEFAULT 'natural',
+  PRIMARY KEY (`WakeUpId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -68,6 +93,158 @@ LOCK TABLES `WakeUp` WRITE;
 /*!40000 ALTER TABLE `WakeUp` DISABLE KEYS */;
 /*!40000 ALTER TABLE `WakeUp` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`blondie`@`localhost`*/ /*!50003 TRIGGER after_WakeUp_insert AFTER INSERT
+       ON WakeUp
+       FOR EACH ROW
+BEGIN
+	SET @sleepId = fn_SleepFrom(NEW.WakeUpTime);
+	IF @sleepId IS NOT NULL THEN
+	   SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE SleepId = @sleepId LIMIT 1);
+	   IF @sleepIntervalId IS NOT NULL THEN
+	      SET @wakeUpTime = (SELECT WakeUpTime FROM SleepInterval JOIN WakeUp ON SleepInterval.WakeUpId = WakeUp.WakeUpId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
+	      IF NEW.WakeUpTime < @wakeUpTime THEN
+	      	 UPDATE SleepInterval SET  WakeUpId = NEW.WakeUpId WHERE SleepIntervalId = @sleepIntervalId;
+	      END IF;
+	   ELSE
+		INSERT INTO SleepInterval(SleepId, WakeUpId) VALUES(@sleepId, NEW.WakeUpId);
+           END IF;
+        END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`blondie`@`localhost`*/ /*!50003 TRIGGER before_WakeUp_delete BEFORE DELETE
+       ON WakeUp
+       FOR EACH ROW
+BEGIN
+	SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE WakeUpId = OLD.WakeUpId LIMIT 1);
+	IF @sleepIntervalId IS NOT NULL THEN
+	   SET @wakeUpId = (SElECT fn_WakeUpFromNth(SleepTime, 1) FROM SleepInterval JOIN Sleep ON SleepInterval.SleepId = Sleep.SleepId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
+	   IF @wakeUpId IS NOT NULL THEN
+	      SET @newSleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE WakeUpId = @wakeUpId LIMIT 1);
+	      IF @newSleepIntervalId IS NULL THEN
+	      	 UPDATE SleepInterval SET WakeUpId = @wakeUpId WHERE SleepIntervalId = @sleepIntervalId;
+              ELSE
+		DELETE FROM SleepInterval WHERE SleepIntervalId = @sleepIntervalId;
+              END IF;
+           ELSE
+		DELETE FROM SleepInterval WHERE SleepIntervalId = @sleepIntervalId;
+           END IF;
+        END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Dumping routines for database 'sleepy_stalker'
+--
+/*!50003 DROP FUNCTION IF EXISTS `fn_SleepFrom` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_SleepFrom`(wakeUpTime timestamp) RETURNS int(11)
+RETURN (SELECT SleepId
+       FROM Sleep
+       WHERE SleepTime <= wakeUpTime
+       ORDER BY SleepTime DESC
+       LIMIT 1) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_SleepFromNth` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_SleepFromNth`(wakeUpTime timestamp, nth INT(4)) RETURNS int(11)
+RETURN (SELECT SleepId
+       FROM Sleep
+       WHERE SleepTime <= wakeUpTime
+       ORDER BY SleepTime DESC
+       LIMIT nth, 1) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_WakeUpFrom` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_WakeUpFrom`(sleepTime timestamp) RETURNS int(11)
+RETURN (SELECT WakeUpId
+       FROM WakeUp
+       WHERE WakeUpTime >= sleepTime
+       ORDER BY WakeUpTime ASC
+       LIMIT 1) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 DROP FUNCTION IF EXISTS `fn_WakeUpFromNth` */;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_WakeUpFromNth`(sleepTime timestamp, nth INT(4)) RETURNS int(11)
+RETURN (SELECT WakeUpId
+       FROM WakeUp
+       WHERE WakeUpTime >= sleepTime
+       ORDER BY WakeUpTime ASC
+       LIMIT nth, 1) ;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -78,4 +255,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-08 23:27:26
+-- Dump completed on 2019-01-11 22:51:04
