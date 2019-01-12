@@ -41,6 +41,70 @@ LOCK TABLES `Sleep` WRITE;
 /*!40000 ALTER TABLE `Sleep` DISABLE KEYS */;
 /*!40000 ALTER TABLE `Sleep` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`blondie`@`localhost`*/ /*!50003 TRIGGER after_Sleep_insert AFTER INSERT
+       ON Sleep
+       FOR EACH ROW
+BEGIN
+	SET @wakeUpId = fn_wakeUpFrom(NEW.SleepTime);
+	IF @wakeUpId IS NOT NULL THEN
+	   SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE WakeUpId = @wakeUpId LIMIT 1);
+	   IF @sleepIntervalId IS NOT NULL THEN
+	      SET @sleepTime = (SELECT SleepTime FROM SleepInterval JOIN Sleep ON SleepInterval.SleepId = Sleep.SleepId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
+	      IF NEW.SleepTime > @sleepTime THEN
+	      	 UPDATE SleepInterval SET SleepId = NEW.SleepId WHERE SleepIntervalId = @sleepIntervalId;
+	      END IF;
+	   ELSE
+		INSERT INTO SleepInterval(SleepId, WakeUpId) VALUES(NEW.SleepId, @wakeUpId);
+           END IF;
+        END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8 */ ;
+/*!50003 SET character_set_results = utf8 */ ;
+/*!50003 SET collation_connection  = utf8_general_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`blondie`@`localhost`*/ /*!50003 TRIGGER before_Sleep_delete BEFORE DELETE
+       ON Sleep
+       FOR EACH ROW
+BEGIN
+	SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE SleepId = OLD.SleepId LIMIT 1);
+	IF @sleepIntervalId IS NOT NULL THEN
+	   SET @sleepId = (SElECT fn_SleepFromNth(WakeUpTime, 1) FROM SleepInterval JOIN WakeUp ON SleepInterval.WakeUpId = WakeUp.WakeUpId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
+	   IF @sleepId IS NOT NULL THEN
+	      SET @newSleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE SleepId = @sleepId LIMIT 1);
+	      IF @newSleepIntervalId IS NULL THEN
+	      	 UPDATE SleepInterval SET SleepId = @sleepId WHERE SleepIntervalId = @sleepIntervalId;
+              ELSE
+		DELETE FROM SleepInterval WHERE SleepIntervalId = @sleepIntervalId;
+              END IF;
+           ELSE
+		DELETE FROM SleepInterval WHERE SleepIntervalId = @sleepIntervalId;
+           END IF;
+        END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 
 --
 -- Table structure for table `SleepInterval`
@@ -255,4 +319,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-11 22:51:04
+-- Dump completed on 2019-01-11 23:53:40
