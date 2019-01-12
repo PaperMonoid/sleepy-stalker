@@ -1,17 +1,45 @@
-# Test sever
-GET http://localhost:5000
-# Create a sleep
+# If the server is up
+GET http://localhost:5000/up
+
+# Create a sleep request with complete body
 POST http://localhost:5000/sleep
 Content-Type: application/json
 {
+	"time": "2019-01-11 23:42:59",
 	"food": "high",
 	"exercise": "low",
 	"stress": "medium",
 	"mood": "happy"
 }
-# Create a wakeup
+
+# Create a sleep request with incomplete complete body
+POST http://localhost:5000/sleep
+Content-Type: application/json
+{
+	"mood": "happy"
+}
+
+# Create a sleep request without body
+POST http://localhost:5000/sleep
+Content-Type: application/json
+{}
+
+# Create a wakeup request with complete body
 POST http://localhost:5000/wakeup
 Content-Type: application/json
 {
-	"type": "other"
+	"time": "2019-01-11 23:44:00",
+	"reason": "other"
 }
+
+# Create a wakeup request with incomplete body
+POST http://localhost:5000/wakeup
+Content-Type: application/json
+{
+	"reason": "natural"
+}
+
+# Create a wakeup request without body
+POST http://localhost:5000/wakeup
+Content-Type: application/json
+{}
