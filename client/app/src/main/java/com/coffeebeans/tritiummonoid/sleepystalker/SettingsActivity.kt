@@ -123,6 +123,8 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     }
 
     companion object {
+        val HOST = "host";
+        val SYNC = "sync";
 
         /**
          * A preference value change listener that updates the preference's summary

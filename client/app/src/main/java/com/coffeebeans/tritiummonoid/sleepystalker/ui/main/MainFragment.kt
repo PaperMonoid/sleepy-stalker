@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import com.coffeebeans.tritiummonoid.sleepystalker.R
 import com.coffeebeans.tritiummonoid.sleepystalker.SleepActivity
+import com.coffeebeans.tritiummonoid.sleepystalker.SyncService
 import com.coffeebeans.tritiummonoid.sleepystalker.WakeUpActivity
 
 class MainFragment : Fragment() {

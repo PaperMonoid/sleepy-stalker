@@ -1,6 +1,6 @@
 package com.coffeebeans.tritiummonoid.sleepystalker
 
-enum class WakeUpType {
+enum class WakeUpReason {
     natural,
     alarm,
     other

@@ -8,6 +8,7 @@ import com.coffeebeans.tritiummonoid.sleepystalker.ui.main.MainFragment
 import android.content.Intent
 import android.view.Menu
 import android.view.MenuInflater
+import android.widget.Toast
 
 
 class MainActivity : AppCompatActivity(){
@@ -20,6 +21,18 @@ class MainActivity : AppCompatActivity(){
                 .replace(R.id.container, MainFragment.newInstance())
                 .commitNow()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        SyncService(this).sync(
+            Runnable {
+                Toast.makeText(this, "SYNCING DATA", Toast.LENGTH_SHORT).show()
+            },
+            Runnable {
+                Toast.makeText(this, "SYNCED DATA", Toast.LENGTH_LONG).show()
+            }
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

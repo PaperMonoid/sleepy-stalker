@@ -8,8 +8,8 @@ import java.util.*
 
 class SleepStore(val context: Context) {
 
-    private fun fromCsv(line: String): List<SleepModel> {
-        val data = line.split(",")
+    private fun String.fromCsv(): List<SleepModel> {
+        val data = this.split(",")
         if (data.size == 5) {
             return listOf(
                 SleepModel(
@@ -21,35 +21,35 @@ class SleepStore(val context: Context) {
         return listOf()
     }
 
-    private fun toCsv(model: SleepModel): String {
+    private fun SleepModel.toCsv(): String {
         return StringBuilder()
-            .append(model.datetime.time).append(",")
-            .append(model.food.name).append(",")
-            .append(model.stress.name).append(",")
-            .append(model.exercise.name).append(",")
-            .append(model.mood.name)
+            .append(datetime.time).append(",")
+            .append(food.name).append(",")
+            .append(stress.name).append(",")
+            .append(exercise.name).append(",")
+            .append(mood.name)
             .toString()
     }
 
     fun save(sleepModel: SleepModel) {
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "sleep.csv")
         if (!file.exists()) {
-            file.writeText(toCsv(sleepModel) + "\n")
+            file.writeText(sleepModel.toCsv() + "\n")
         } else {
-            file.appendText(toCsv(sleepModel) + "\n")
+            file.appendText(sleepModel.toCsv() + "\n")
         }
     }
 
     fun saveAll(sleepModels: List<SleepModel>) {
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "sleep.csv")
-        val text = sleepModels.fold(StringBuilder()) { builder, sleepModel -> builder.append(toCsv(sleepModel)).append("\n")}.toString()
+        val text = sleepModels.fold(StringBuilder()) { builder, sleepModel -> builder.append(sleepModel.toCsv()).append("\n")}.toString()
         file.writeText(text)
     }
 
     fun fetchAll(): List<SleepModel> {
         val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "sleep.csv")
         if (file.exists()) {
-            return file.readLines().flatMap { line -> fromCsv(line) }
+            return file.readLines().flatMap { line -> line.fromCsv() }
         }
         return listOf()
     }
