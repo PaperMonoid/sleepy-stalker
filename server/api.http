@@ -1,10 +1,18 @@
 # If the server is up
 GET http://localhost:5000/up
 
+# Create user
+POST http://localhost:5000/user
+Content-Type: application/json
+{
+	"name": "tritiummonoid"
+}
+
 # Create a sleep request with complete body
 POST http://localhost:5000/sleep
 Content-Type: application/json
 {
+	"name": "tritiummonoid",
 	"time": "2019-01-11 23:42:59",
 	"food": "high",
 	"exercise": "low",
@@ -16,18 +24,22 @@ Content-Type: application/json
 POST http://localhost:5000/sleep
 Content-Type: application/json
 {
+	"name": "tritiummonoid",
 	"mood": "happy"
 }
 
 # Create a sleep request without body
 POST http://localhost:5000/sleep
 Content-Type: application/json
-{}
+{
+	"name": "tritiummonoid"
+}
 
 # Create a wakeup request with complete body
 POST http://localhost:5000/wakeup
 Content-Type: application/json
 {
+	"name": "tritiummonoid",
 	"time": "2019-01-11 23:44:00",
 	"reason": "other"
 }
@@ -36,10 +48,13 @@ Content-Type: application/json
 POST http://localhost:5000/wakeup
 Content-Type: application/json
 {
+	"name": "tritiummonoid",
 	"reason": "natural"
 }
 
 # Create a wakeup request without body
 POST http://localhost:5000/wakeup
 Content-Type: application/json
-{}
+{
+	"name": "tritiummonoid"
+}

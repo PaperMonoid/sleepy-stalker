@@ -24,12 +24,15 @@ DROP TABLE IF EXISTS `Sleep`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `Sleep` (
   `SleepId` int(4) NOT NULL AUTO_INCREMENT,
+  `SleepyUserId` int(4) NOT NULL,
   `SleepTime` timestamp NOT NULL DEFAULT current_timestamp(),
   `Food` enum('low','medium','high') NOT NULL DEFAULT 'low',
   `Exercise` enum('low','medium','high') NOT NULL DEFAULT 'low',
   `Stress` enum('low','medium','high') NOT NULL DEFAULT 'low',
   `Mood` enum('happy','sad','angry') NOT NULL DEFAULT 'happy',
-  PRIMARY KEY (`SleepId`)
+  PRIMARY KEY (`SleepId`),
+  KEY `SleepyUserId` (`SleepyUserId`),
+  CONSTRAINT `Sleep_ibfk_1` FOREIGN KEY (`SleepyUserId`) REFERENCES `SleepyUser` (`SleepyUserId`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -54,7 +57,7 @@ DELIMITER ;;
        ON Sleep
        FOR EACH ROW
 BEGIN
-	SET @wakeUpId = fn_wakeUpFrom(NEW.SleepTime);
+	SET @wakeUpId = fn_wakeUpFrom(NEW.SleepTime, NEW.SleepyUserId);
 	IF @wakeUpId IS NOT NULL THEN
 	   SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE WakeUpId = @wakeUpId LIMIT 1);
 	   IF @sleepIntervalId IS NOT NULL THEN
@@ -63,7 +66,7 @@ BEGIN
 	      	 UPDATE SleepInterval SET SleepId = NEW.SleepId WHERE SleepIntervalId = @sleepIntervalId;
 	      END IF;
 	   ELSE
-		INSERT INTO SleepInterval(SleepId, WakeUpId) VALUES(NEW.SleepId, @wakeUpId);
+		INSERT INTO SleepInterval(SleepyUserId, SleepId, WakeUpId) VALUES(NEW.SleepyUserId, NEW.SleepId, @wakeUpId);
            END IF;
         END IF;
 END */;;
@@ -87,7 +90,7 @@ DELIMITER ;;
 BEGIN
 	SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE SleepId = OLD.SleepId LIMIT 1);
 	IF @sleepIntervalId IS NOT NULL THEN
-	   SET @sleepId = (SElECT fn_SleepFromNth(WakeUpTime, 1) FROM SleepInterval JOIN WakeUp ON SleepInterval.WakeUpId = WakeUp.WakeUpId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
+	   SET @sleepId = (SElECT fn_SleepFromNth(WakeUpTime, SleepInterval.SleepyUserId, 1) FROM SleepInterval JOIN WakeUp ON SleepInterval.WakeUpId = WakeUp.WakeUpId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
 	   IF @sleepId IS NOT NULL THEN
 	      SET @newSleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE SleepId = @sleepId LIMIT 1);
 	      IF @newSleepIntervalId IS NULL THEN
@@ -115,13 +118,16 @@ DROP TABLE IF EXISTS `SleepInterval`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `SleepInterval` (
   `SleepIntervalId` int(4) NOT NULL AUTO_INCREMENT,
+  `SleepyUserId` int(4) NOT NULL,
   `SleepId` int(4) NOT NULL,
   `WakeUpId` int(4) NOT NULL,
   PRIMARY KEY (`SleepIntervalId`),
   UNIQUE KEY `SleepId` (`SleepId`),
   UNIQUE KEY `WakeUpId` (`WakeUpId`),
+  KEY `SleepyUserId` (`SleepyUserId`),
   CONSTRAINT `SleepInterval_ibfk_1` FOREIGN KEY (`SleepId`) REFERENCES `Sleep` (`SleepId`),
-  CONSTRAINT `SleepInterval_ibfk_2` FOREIGN KEY (`WakeUpId`) REFERENCES `WakeUp` (`WakeUpId`)
+  CONSTRAINT `SleepInterval_ibfk_2` FOREIGN KEY (`WakeUpId`) REFERENCES `WakeUp` (`WakeUpId`),
+  CONSTRAINT `SleepInterval_ibfk_3` FOREIGN KEY (`SleepyUserId`) REFERENCES `SleepyUser` (`SleepyUserId`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -135,6 +141,32 @@ LOCK TABLES `SleepInterval` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `SleepyUser`
+--
+
+DROP TABLE IF EXISTS `SleepyUser`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `SleepyUser` (
+  `SleepyUserId` int(4) NOT NULL AUTO_INCREMENT,
+  `SleepyUserName` varchar(32) NOT NULL,
+  PRIMARY KEY (`SleepyUserId`),
+  UNIQUE KEY `Username` (`SleepyUserName`),
+  UNIQUE KEY `Username_2` (`SleepyUserName`),
+  UNIQUE KEY `SleepyUserName` (`SleepyUserName`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `SleepyUser`
+--
+
+LOCK TABLES `SleepyUser` WRITE;
+/*!40000 ALTER TABLE `SleepyUser` DISABLE KEYS */;
+/*!40000 ALTER TABLE `SleepyUser` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `WakeUp`
 --
 
@@ -143,9 +175,12 @@ DROP TABLE IF EXISTS `WakeUp`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `WakeUp` (
   `WakeUpId` int(4) NOT NULL AUTO_INCREMENT,
+  `SleepyUserId` int(4) NOT NULL,
   `WakeUpTime` timestamp NOT NULL DEFAULT current_timestamp(),
   `WakeUpReason` enum('natural','alarm','other') NOT NULL DEFAULT 'natural',
-  PRIMARY KEY (`WakeUpId`)
+  PRIMARY KEY (`WakeUpId`),
+  KEY `SleepyUserId` (`SleepyUserId`),
+  CONSTRAINT `WakeUp_ibfk_1` FOREIGN KEY (`SleepyUserId`) REFERENCES `SleepyUser` (`SleepyUserId`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -170,7 +205,7 @@ DELIMITER ;;
        ON WakeUp
        FOR EACH ROW
 BEGIN
-	SET @sleepId = fn_SleepFrom(NEW.WakeUpTime);
+	SET @sleepId = fn_SleepFrom(NEW.WakeUpTime, NEW.SleepyUserId);
 	IF @sleepId IS NOT NULL THEN
 	   SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE SleepId = @sleepId LIMIT 1);
 	   IF @sleepIntervalId IS NOT NULL THEN
@@ -179,7 +214,7 @@ BEGIN
 	      	 UPDATE SleepInterval SET  WakeUpId = NEW.WakeUpId WHERE SleepIntervalId = @sleepIntervalId;
 	      END IF;
 	   ELSE
-		INSERT INTO SleepInterval(SleepId, WakeUpId) VALUES(@sleepId, NEW.WakeUpId);
+		INSERT INTO SleepInterval(SleepyUserId, SleepId, WakeUpId) VALUES(NEW.SleepyUserId, @sleepId, NEW.WakeUpId);
            END IF;
         END IF;
 END */;;
@@ -203,7 +238,7 @@ DELIMITER ;;
 BEGIN
 	SET @sleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE WakeUpId = OLD.WakeUpId LIMIT 1);
 	IF @sleepIntervalId IS NOT NULL THEN
-	   SET @wakeUpId = (SElECT fn_WakeUpFromNth(SleepTime, 1) FROM SleepInterval JOIN Sleep ON SleepInterval.SleepId = Sleep.SleepId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
+	   SET @wakeUpId = (SElECT fn_WakeUpFromNth(SleepTime, SleepInterval.SleepyUserId, 1) FROM SleepInterval JOIN Sleep ON SleepInterval.SleepId = Sleep.SleepId WHERE SleepIntervalId = @sleepIntervalId LIMIT 1);
 	   IF @wakeUpId IS NOT NULL THEN
 	      SET @newSleepIntervalId = (SELECT SleepIntervalId FROM SleepInterval WHERE WakeUpId = @wakeUpId LIMIT 1);
 	      IF @newSleepIntervalId IS NULL THEN
@@ -235,10 +270,10 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_SleepFrom`(wakeUpTime timestamp) RETURNS int(11)
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_SleepFrom`(wakeUpTime timestamp, userId INT(4)) RETURNS int(11)
 RETURN (SELECT SleepId
        FROM Sleep
-       WHERE SleepTime <= wakeUpTime
+       WHERE SleepTime <= wakeUpTime AND SleepyUserId = userId
        ORDER BY SleepTime DESC
        LIMIT 1) ;;
 DELIMITER ;
@@ -256,10 +291,10 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_SleepFromNth`(wakeUpTime timestamp, nth INT(4)) RETURNS int(11)
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_SleepFromNth`(wakeUpTime timestamp, userId INT(4), nth INT(4)) RETURNS int(11)
 RETURN (SELECT SleepId
        FROM Sleep
-       WHERE SleepTime <= wakeUpTime
+       WHERE SleepTime <= wakeUpTime AND SleepyUserId = userId
        ORDER BY SleepTime DESC
        LIMIT nth, 1) ;;
 DELIMITER ;
@@ -277,10 +312,10 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_WakeUpFrom`(sleepTime timestamp) RETURNS int(11)
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_WakeUpFrom`(sleepTime timestamp, userId INT(4)) RETURNS int(11)
 RETURN (SELECT WakeUpId
        FROM WakeUp
-       WHERE WakeUpTime >= sleepTime
+       WHERE WakeUpTime >= sleepTime AND SleepyUserId = userId
        ORDER BY WakeUpTime ASC
        LIMIT 1) ;;
 DELIMITER ;
@@ -298,10 +333,10 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'STRICT_TRANS_TABLES,ERROR_FOR_DIVISION_BY_ZERO,NO_AUTO_CREATE_USER,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_WakeUpFromNth`(sleepTime timestamp, nth INT(4)) RETURNS int(11)
+CREATE DEFINER=`blondie`@`localhost` FUNCTION `fn_WakeUpFromNth`(sleepTime timestamp, userId INT(4), nth INT(4)) RETURNS int(11)
 RETURN (SELECT WakeUpId
        FROM WakeUp
-       WHERE WakeUpTime >= sleepTime
+       WHERE WakeUpTime >= sleepTime AND SleepyUserId = userId
        ORDER BY WakeUpTime ASC
        LIMIT nth, 1) ;;
 DELIMITER ;
@@ -319,4 +354,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-01-11 23:53:40
+-- Dump completed on 2019-01-14 22:39:59
