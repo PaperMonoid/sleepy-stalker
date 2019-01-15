@@ -15,22 +15,24 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SleepActivity">
+        <activity android:name=".SleepActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".WakeUpActivity">
+        <activity android:name=".WakeUpActivity" android:screenOrientation="portrait">
         </activity>
         <activity
                 android:name=".SettingsActivity"
-                android:label="@string/title_activity_settings">
+                android:label="@string/title_activity_settings"
+                android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".SyncActivity">
+        <activity android:name=".SyncActivity"
+                  android:screenOrientation="portrait">
         </activity>
     </application>
 

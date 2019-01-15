@@ -28,7 +28,7 @@ class WakeUpStore(val context: Context) {
     }
 
     fun save(wakeUpModel: WakeUpModel) {
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "wakeup.csv")
+        val file = File(context.getExternalFilesDir("Documents"), "wakeup.csv")
         if (!file.exists()) {
             file.writeText(wakeUpModel.toCsv() + "\n")
         } else {
@@ -37,13 +37,13 @@ class WakeUpStore(val context: Context) {
     }
 
     fun saveAll(wakeUpModels: List<WakeUpModel>) {
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "wakeup.csv")
+        val file = File(context.getExternalFilesDir("Documents"), "wakeup.csv")
         val text = wakeUpModels.fold(StringBuilder()) { builder, wakeUpModel -> builder.append(wakeUpModel.toCsv()).append("\n")}.toString()
         file.writeText(text)
     }
 
     fun fetchAll(): List<WakeUpModel> {
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "wakeup.csv")
+        val file = File(context.getExternalFilesDir("Documents"), "wakeup.csv")
         if (file.exists()) {
             return file.readLines().flatMap { line -> line.fromCsv() }
         }

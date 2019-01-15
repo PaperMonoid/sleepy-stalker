@@ -19,12 +19,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" android:layout_weight="1"/>
         <ImageView
-                android:src="@mipmap/sleepy_stalker"
                 android:layout_width="150dp"
                 android:layout_height="150dp" android:id="@+id/imageView" android:layout_gravity="center"
-                android:layout_marginBottom="15dp"/>
+                android:layout_marginBottom="15dp" app:srcCompat="@drawable/sleepy_stalker"/>
         <TextView
-                android:text="      A sleep tracking system which predicts your time asleep. "
+                android:text="A sleep tracking system which predicts your time asleep. "
                 android:layout_width="200dp"
                 android:layout_height="wrap_content" android:id="@+id/textView" android:lines="3"
                 android:layout_marginBottom="10dp" android:gravity="center"/>

@@ -66,6 +66,14 @@ class SettingsActivity : AppCompatPreferenceActivity() {
                 || NotificationPreferenceFragment::class.java.name == fragmentName
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == android.R.id.home) {
+            finish()
+        }
+        return true;
+    }
+
     /**
      * This fragment shows notification preferences only. It is used when the
      * activity is showing a two-pane settings UI.

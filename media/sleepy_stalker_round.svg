@@ -17,7 +17,7 @@
    version="1.1"
    id="svg8"
    inkscape:version="0.92.3 (2405546, 2018-03-11)"
-   sodipodi:docname="sleepy-stalker-2.svg"
+   sodipodi:docname="sleepy_stalker_round.svg"
    inkscape:export-filename="/home/tritiummonoid/Development/sleepy-stalker/client/app/src/main/res/mipmap-xxxhdpi/sleepy_stalker.png"
    inkscape:export-xdpi="1832.286"
    inkscape:export-ydpi="1832.286">
@@ -55,9 +55,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="3.959798"
-     inkscape:cx="8.9670033"
-     inkscape:cy="17.339652"
+     inkscape:zoom="2.8"
+     inkscape:cx="24.061089"
+     inkscape:cy="34.630183"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -84,7 +84,7 @@
      id="layer1"
      transform="translate(-6.3170074,-1.623224)">
     <ellipse
-       style="opacity:0.99999999;fill:#de8787;fill-opacity:1;stroke:#333333;stroke-width:0.665;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+       style="opacity:0.99999999;fill:#de8787;fill-opacity:1;stroke:none;stroke-width:0.665;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path842"
        cx="15.003266"
        cy="9.9714403"

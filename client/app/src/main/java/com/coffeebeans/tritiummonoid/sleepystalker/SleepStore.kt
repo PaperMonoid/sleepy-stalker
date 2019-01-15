@@ -32,7 +32,7 @@ class SleepStore(val context: Context) {
     }
 
     fun save(sleepModel: SleepModel) {
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "sleep.csv")
+        val file = File(context.getExternalFilesDir("Documents"), "sleep.csv")
         if (!file.exists()) {
             file.writeText(sleepModel.toCsv() + "\n")
         } else {
@@ -41,13 +41,13 @@ class SleepStore(val context: Context) {
     }
 
     fun saveAll(sleepModels: List<SleepModel>) {
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "sleep.csv")
+        val file = File(context.getExternalFilesDir("Documents"), "sleep.csv")
         val text = sleepModels.fold(StringBuilder()) { builder, sleepModel -> builder.append(sleepModel.toCsv()).append("\n")}.toString()
         file.writeText(text)
     }
 
     fun fetchAll(): List<SleepModel> {
-        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), "sleep.csv")
+        val file = File(context.getExternalFilesDir("Documents"), "sleep.csv")
         if (file.exists()) {
             return file.readLines().flatMap { line -> line.fromCsv() }
         }

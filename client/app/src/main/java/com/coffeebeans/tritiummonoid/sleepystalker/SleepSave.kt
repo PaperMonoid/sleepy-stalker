@@ -10,6 +10,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -31,6 +33,7 @@ class SleepSave : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var listener: OnFragmentInteractionListener? = null
+    private val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,7 +57,7 @@ class SleepSave : Fragment() {
             val txtExercise = view.findViewById(R.id.txtSleepValueExercise) as TextView
             val txtMood = view.findViewById(R.id.txtSleepValueMood) as TextView
             val btnSave = view.findViewById(R.id.btnSleepSave) as Button
-            txtTime.text = model.datetime.toString()
+            txtTime.text = model.datetime.format()
             txtFood.text = model.food.name
             txtStress.text = model.stress.name
             txtExercise.text = model.exercise.name
@@ -71,6 +74,10 @@ class SleepSave : Fragment() {
             }
         })
         return view
+    }
+
+    private fun Date.format(): String {
+        return formatter.format(this)
     }
 
     override fun onAttach(context: Context) {

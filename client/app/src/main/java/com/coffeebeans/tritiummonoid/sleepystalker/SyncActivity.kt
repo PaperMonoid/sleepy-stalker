@@ -20,8 +20,8 @@ class SyncActivity : AppCompatActivity() {
         val progressBar = findViewById(R.id.barSync) as ProgressBar
         val txtSleeps = findViewById(R.id.txtSyncValueSleeps) as TextView;
         val txtWakeUps = findViewById(R.id.txtSyncValueWakeUps) as TextView;
-        txtSleeps.text = SleepStore(this).fetchAll().count().toString();
-        txtWakeUps.text = WakeUpStore(this).fetchAll().count().toString();
+        txtSleeps.text = getSleepsCount()
+        txtWakeUps.text = getWakeUpsCount()
         progressBar.visibility = View.INVISIBLE;
         btnSync.setOnClickListener {
             SyncService(this).sync(
@@ -34,6 +34,22 @@ class SyncActivity : AppCompatActivity() {
                     finish()
                 }
             )
+        }
+    }
+
+    fun getSleepsCount(): String {
+        try {
+            return SleepStore(this).fetchAll().count().toString()
+        } catch (e: Exception) {
+            return "0"
+        }
+    }
+
+    fun getWakeUpsCount(): String {
+        try {
+            return WakeUpStore(this).fetchAll().count().toString()
+        } catch (e: Exception) {
+            return "0"
         }
     }
 
