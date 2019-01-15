@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity(){
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
-        if (id === R.id.settings) {
+        if (id == R.id.settings) {
             val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
             return true

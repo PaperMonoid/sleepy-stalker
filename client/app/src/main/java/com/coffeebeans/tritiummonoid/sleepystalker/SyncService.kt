@@ -21,11 +21,11 @@ class SyncService(context: Context) {
     private val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     fun sync(onStart: Runnable, onFinish: Runnable) {
-        val name: String = sharedPreferences.getString(SettingsActivity.USERNAME, "")
+        val name: String = sharedPreferences.getString(SettingsActivity.USERNAME, "")!!
         Log.v("PREFERENCE", "sync on => " + name.equals("").not().toString())
         if (name.equals("").not()) {
             Log.v("SYNC", "sync on => starting...")
-            val host = sharedPreferences.getString(SettingsActivity.HOST, "http://localhost:5000")
+            val host = sharedPreferences.getString(SettingsActivity.HOST, "http://localhost:5000")!!
             Log.v("SYNC", "sync on => host: " + host)
             val executor = Executors.newFixedThreadPool(2)
             if (executor.submit<Boolean> { isUp(host) }.get(10, TimeUnit.SECONDS)) {
