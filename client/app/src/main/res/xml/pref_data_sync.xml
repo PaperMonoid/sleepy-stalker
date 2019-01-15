@@ -4,13 +4,14 @@
          dismiss it. -->
     <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
     <EditTextPreference
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Username" android:key="username"/>
+    <EditTextPreference
             android:defaultValue="http://localhost:5000"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Host" android:key="host"/>
-    <SwitchPreference
-            android:defaultValue="false"
-            android:title="Sync" android:key="sync"/>
 
     <!-- This preference simply launches an intent when selected. Use this UI sparingly, per
          design guidelines. -->

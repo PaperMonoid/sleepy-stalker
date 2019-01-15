@@ -108,6 +108,7 @@ class SettingsActivity : AppCompatPreferenceActivity() {
             // to their values. When their values change, their summaries are
             // updated to reflect the new value, per the Android Design
             // guidelines.
+            bindPreferenceSummaryToValue(findPreference("username"))
             bindPreferenceSummaryToValue(findPreference("host"))
             //bindPreferenceSummaryToValue(findPreference("sync"))
         }
@@ -123,8 +124,8 @@ class SettingsActivity : AppCompatPreferenceActivity() {
     }
 
     companion object {
+        val USERNAME = "username";
         val HOST = "host";
-        val SYNC = "sync";
 
         /**
          * A preference value change listener that updates the preference's summary

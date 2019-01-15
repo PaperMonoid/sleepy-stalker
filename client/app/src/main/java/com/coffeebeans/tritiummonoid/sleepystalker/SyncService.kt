@@ -9,7 +9,6 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import java.lang.Exception
 import java.lang.StringBuilder
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
@@ -22,9 +21,9 @@ class SyncService(context: Context) {
     private val formatter: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
     fun sync(onStart: Runnable, onFinish: Runnable) {
-        val isSyncOn: Boolean = sharedPreferences.getBoolean(SettingsActivity.SYNC, false)
-        Log.v("PREFERENCE", "sync on => " + isSyncOn.toString())
-        if (isSyncOn) {
+        val name: String = sharedPreferences.getString(SettingsActivity.USERNAME, "")
+        Log.v("PREFERENCE", "sync on => " + name.equals("").not().toString())
+        if (name.equals("").not()) {
             Log.v("SYNC", "sync on => starting...")
             val host = sharedPreferences.getString(SettingsActivity.HOST, "http://localhost:5000")
             Log.v("SYNC", "sync on => host: " + host)
@@ -33,7 +32,7 @@ class SyncService(context: Context) {
                 onStart.run()
                 Log.v("SYNC", "host up => syncing...")
                 val sleepModelsReminders: List<SleepModel> = sleepStore.fetchAll()
-                    .map { executor.submit<List<SleepModel>> { it.sync(host) } }
+                    .map { executor.submit<List<SleepModel>> { it.sync(host, name) } }
                     .fold(listOf()) { list, future -> list.plus(future.get()) }
                 try {
                     sleepStore.saveAll(sleepModelsReminders)
@@ -42,7 +41,7 @@ class SyncService(context: Context) {
                     Log.e("SYNC", "sync sleep => ERROR")
                 }
                 val wakeUpModelsReminders: List<WakeUpModel> = wakeUpStore.fetchAll()
-                    .map { executor.submit<List<WakeUpModel>> { it.sync(host) } }
+                    .map { executor.submit<List<WakeUpModel>> { it.sync(host, name) } }
                     .fold(listOf()) { list, future -> list.plus(future.get()) }
                 try {
                     wakeUpStore.saveAll(wakeUpModelsReminders)
@@ -62,9 +61,9 @@ class SyncService(context: Context) {
         return error == null
     }
 
-    fun SleepModel.sync(host: String): List<SleepModel> {
+    fun SleepModel.sync(host: String, name: String): List<SleepModel> {
         val url: String = StringBuilder().append(host).append("/sleep").toString()
-        val error: FuelError? = url.httpPost().jsonBody(toJson()).response().third.component2()
+        val error: FuelError? = url.httpPost().jsonBody(toJson(name)).response().third.component2()
         if (error == null) {
             return listOf()
         } else {
@@ -72,9 +71,9 @@ class SyncService(context: Context) {
         }
     }
 
-    fun WakeUpModel.sync(host: String): List<WakeUpModel> {
+    fun WakeUpModel.sync(host: String, name: String): List<WakeUpModel> {
         val url: String = StringBuilder().append(host).append("/wakeup").toString()
-        val error: FuelError? = url.httpPost().jsonBody(toJson()).response().third.component2()
+        val error: FuelError? = url.httpPost().jsonBody(toJson(name)).response().third.component2()
         if (error == null) {
             return listOf()
         } else {
@@ -86,8 +85,9 @@ class SyncService(context: Context) {
         return formatter.format(this)
     }
 
-    private fun SleepModel.toJson(): String {
+    private fun SleepModel.toJson(name: String): String {
         return StringBuilder("{")
+            .append("\"name\":\"").append(name).append("\",")
             .append("\"time\":\"").append(datetime.format()).append("\",")
             .append("\"food\":\"").append(food.name).append("\",")
             .append("\"stress\":\"").append(stress.name).append("\",")
@@ -97,8 +97,9 @@ class SyncService(context: Context) {
             .toString()
     }
 
-    private fun WakeUpModel.toJson(): String {
+    private fun WakeUpModel.toJson(name: String): String {
         return StringBuilder("{")
+            .append("\"name\":\"").append(name).append("\",")
             .append("\"time\":\"").append(datetime.format()).append("\",")
             .append("\"reason\":\"").append(reason.name).append("\"")
             .append("}")

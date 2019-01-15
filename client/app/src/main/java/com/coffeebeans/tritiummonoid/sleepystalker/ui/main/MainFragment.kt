@@ -9,10 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.Toast
-import com.coffeebeans.tritiummonoid.sleepystalker.R
-import com.coffeebeans.tritiummonoid.sleepystalker.SleepActivity
-import com.coffeebeans.tritiummonoid.sleepystalker.SyncService
-import com.coffeebeans.tritiummonoid.sleepystalker.WakeUpActivity
+import com.coffeebeans.tritiummonoid.sleepystalker.*
 
 class MainFragment : Fragment() {
 
@@ -34,6 +31,10 @@ class MainFragment : Fragment() {
         var btnWakeUpF = view.findViewById(R.id.btnWakeUpF) as Button
         btnWakeUpF.setOnClickListener {
             startActivity(Intent(view.context, WakeUpActivity::class.java))
+        }
+        var btnSyncF = view.findViewById(R.id.btnSyncF) as Button
+        btnSyncF.setOnClickListener {
+            startActivity(Intent(view.context, SyncActivity::class.java))
         }
         return view
     }
